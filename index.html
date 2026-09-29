@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SVU | مشغل المحاضرات المباشرة</title>
+
+  <!-- ===== Google Fonts: Cairo & Tajawal (Arabic typography) ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
+
+  <!-- ===== Icons ===== -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- ===== Main stylesheet ===== -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       Animated ambient background (gradient orbs + grid overlay)
+  ============================================================ -->
+  <div class="bg-decor" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+    <div class="bg-grid"></div>
+  </div>
+
+  <!-- ============================================================
+       LOGIN MODAL — shown over a blurred backdrop on page load
+  ============================================================ -->
+  <div class="login-backdrop" id="loginBackdrop">
+    <div class="login-modal glass" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+
+      <!-- Brand mark -->
+      <div class="login-brand">
+        <div class="logo-badge">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <h1 id="loginTitle">الجامعة الافتراضية السورية</h1>
+        <p>مشغّل المحاضرات المباشرة — تسجيل الدخول</p>
+      </div>
+
+      <!-- Login form -->
+      <form id="loginForm" autocomplete="off">
+        <div class="field">
+          <label for="username">اسم المستخدم</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="username" placeholder="مثال: svu.student" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="password">كلمة المرور</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="password" placeholder="••••••••" required />
+            <button type="button" class="eye-toggle" id="eyeToggle" aria-label="إظهار كلمة المرور">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="field row">
+          <label class="checkbox">
+            <input type="checkbox" id="rememberMe" />
+            <span class="box"></span>
+            تذكرني
+          </label>
+          <a href="#" class="link" onclick="return false">نسيت كلمة المرور؟</a>
+        </div>
+
+        <p class="login-error" id="loginError">الرجاء إدخال اسم المستخدم وكلمة المرور</p>
+
+        <div class="login-actions">
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول
+          </button>
+          <button type="button" class="btn btn-ghost btn-block" id="cancelLogin">
+            إلغاء
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MAIN DASHBOARD — hidden until login succeeds
+  ============================================================ -->
+  <div class="dashboard hidden" id="dashboard">
+
+    <!-- ===== Top header: title + filters + execute ===== -->
+    <header class="topbar glass">
+      <div class="brand">
+        <div class="logo-badge small"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div>
+          <h2>مشغّل المحاضرات المباشرة</h2>
+          <span class="muted">الجامعة الافتراضية السورية</span>
+        </div>
+      </div>
+
+      <div class="filters">
+        <div class="select-wrap">
+          <i class="fa-solid fa-layer-group"></i>
+          <select id="programFilter" aria-label="البرنامج">
+            <option value="">كل البرامج</option>
+            <option value="informatics">المعلوماتية</option>
+            <option value="it">تقنية المعلومات</option>
+            <option value="business">إدارة الأعمال</option>
+          </select>
+        </div>
+
+        <div class="select-wrap">
+          <i class="fa-solid fa-book-open"></i>
+          <select id="subjectFilter" aria-label="المادة">
+            <option value="">كل المواد</option>
+            <option value="cpp">برمجة C++</option>
+            <option value="se">هندسة برمجيات</option>
+            <option value="db">قواعد البيانات</option>
+            <option value="net">شبكات الحاسوب</option>
+            <option value="math">الرياضيات المتقطعة</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" id="executeBtn">
+          <i class="fa-solid fa-filter"></i> تنفيذ
+        </button>
+      </div>
+    </header>
+
+    <!-- ===== Body: table (left) + sidebar (right, first in RTL flow) ===== -->
+    <div class="layout">
+
+      <!-- Sidebar appears on the RIGHT because dir="rtl" + grid order -->
+      <aside class="sidebar glass">
+        <div class="sidebar-user">
+          <div class="avatar" id="avatar">أ</div>
+          <div>
+            <strong id="displayName">طالب SVU</strong>
+            <span class="muted">متصل الآن</span>
+          </div>
+        </div>
+
+        <nav class="side-actions">
+          <button class="btn btn-success btn-block" id="playBtn" disabled>
+            <i class="fa-solid fa-play"></i> تشغيل المحاضرة
+          </button>
+          <button class="btn btn-outline btn-block">
+            <i class="fa-solid fa-rotate-right"></i> تحديث القائمة
+          </button>
+          <button class="btn btn-outline btn-block">
+            <i class="fa-solid fa-circle-info"></i> حول
+          </button>
+          <div class="divider"></div>
+          <button class="btn btn-warn btn-block">
+            <i class="fa-solid fa-right-from-bracket"></i> تسجيل خروج
+          </button>
+          <button class="btn btn-danger btn-block">
+            <i class="fa-solid fa-power-off"></i> خروج
+          </button>
+        </nav>
+
+        <div class="sidebar-footer muted">
+          <i class="fa-regular fa-clock"></i>
+          <span id="clock">--:--</span>
+        </div>
+      </aside>
+
+      <!-- Main content: stats + lectures table -->
+      <main class="content">
+        <section class="stats">
+          <div class="stat glass">
+            <i class="fa-solid fa-video green"></i>
+            <div><strong id="statLive">0</strong><span>جارية الآن</span></div>
+          </div>
+          <div class="stat glass">
+            <i class="fa-solid fa-hourglass-half orange"></i>
+            <div><strong id="statSoon">0</strong><span>لم تبدأ</span></div>
+          </div>
+          <div class="stat glass">
+            <i class="fa-solid fa-check gray"></i>
+            <div><strong id="statDone">0</strong><span>منتهية</span></div>
+          </div>
+        </section>
+
+        <section class="table-card glass">
+          <div class="table-head">
+            <h3><i class="fa-solid fa-list-ul"></i> جدول المحاضرات</h3>
+            <span class="muted" id="lecturesCount">عدد المحاضرات: 0</span>
+          </div>
+
+          <div class="table-scroll">
+            <table id="lecturesTable">
+              <thead>
+                <tr>
+                  <th>وقت المحاضرة</th>
+                  <th>اسم المحاضرة</th>
+                  <th>الحالة</th>
+                  <th>وقت البدء الفعلي</th>
+                  <th>اسم المدرس</th>
+                </tr>
+              </thead>
+              <!-- Rows injected by app.js -->
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ===== Footer: live counter ===== -->
+    <footer class="footer glass">
+      <span><i class="fa-solid fa-satellite-dish green pulse"></i></span>
+      عدد المحاضرات المباشرة الآن: <strong id="footerLive">0</strong>
+      <span class="muted">© الجامعة الافتراضية السورية 2026</span>
+    </footer>
+  </div>
+
+  <!-- ===== Toast notifications ===== -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
