@@ -29,4 +29,4 @@ An upgraded, highly optimized, and modern web interface for the Syrian Virtual U
 
 1. Clone the repository:
    `bash
-   git clone [https://github.com/Ali-Iyad-Durra/Remote-SVU-Live-Lectures-Player.git](https://github.com/Ali-Iyad-Durra/Remote-SVU-Live-Lectures-Player.git)
+   git clone [https://github.com/Ali-Iyad-Durra/Remake-SVU-Lancher-.git](https://github.com/Ali-Iyad-Durra/Remake-SVU-Lancher-.git)
